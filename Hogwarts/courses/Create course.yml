@@ -1,0 +1,22 @@
+info:
+  name: Create course
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: http://localhost:3000/courses
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Defense Against the Dark Arts",
+        "teacher_id": 2
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

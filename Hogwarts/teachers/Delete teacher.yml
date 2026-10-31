@@ -1,11 +1,11 @@
 info:
-  name: Update teacher
+  name: Delete teacher
   type: http
-  seq: 1
+  seq: 5
 
 http:
-  method: PUT
-  url: http://localhost:3000/teachers/9
+  method: DELETE
+  url: http://localhost:3000/teachers/3
   auth: inherit
 
 settings:

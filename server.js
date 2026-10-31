@@ -20,11 +20,11 @@ app.use('/houses', housesRoutes);
 
 // TEACHERS – fuld CRUD 
 // hent alle teachers + hent en teacher + opret ny teacher + opdater en teacher + slet en teacher
-app.get("/teachers", teachersRoutes);
+app.use("/teachers", teachersRoutes);
 
 // STUDENTS – fuld CRUD  
 // hent alle students + hent en student + opret ny student + opdater en student + slet en student
-app.get("/students", studentsRoutes);
+app.use("/students", studentsRoutes);
 
 // COURSES
 // Har ekstra Update: set teacher, add/remove student
@@ -33,11 +33,9 @@ app.get("/students", studentsRoutes);
 app.get("/courses", coursesController.getAllCourses);
 
 // R – ét kursus MED teacher + students
-// Fx /courses/1 → Potions + Snape + Harry, Hermione, Ron
 app.get("/courses/:id", coursesController.getCourseById);
 
 // C – opret kursus
-// Body: { "name": "Charms", "teacher_id": 3 }
 app.post("/courses", async (req, res) => {
   const { name, teacher_id } = req.body;
   const result = await pool.query(
@@ -48,11 +46,9 @@ app.post("/courses", async (req, res) => {
 });
 
 // U – opdater kun kursus-navn
-// Body: { "name": "Advanced Potions" }
 app.put("/courses/:id", coursesController.putCourse);
 
 // U – sæt / skift teacher på et kursus
-// Body: { "teacher_id": 2 }
 app.put("/courses/:id/teacher", async (req, res) => {
   const { teacher_id } = req.body;
   const result = await pool.query(
@@ -63,7 +59,6 @@ app.put("/courses/:id/teacher", async (req, res) => {
 });
 
 // U – tilføj elev til kursus
-// Body: { "student_id": 4 }
 app.post("/courses/:id/students", async (req, res) => {
   const { student_id } = req.body;
   await pool.query(
@@ -74,7 +69,6 @@ app.post("/courses/:id/students", async (req, res) => {
 });
 
 // U – fjern elev fra kursus
-// Fx DELETE /courses/1/students/4
 app.delete("/courses/:id/students/:studentId", async (req, res) => {
   await pool.query(
     "DELETE FROM course_students WHERE course_id = $1 AND student_id = $2",

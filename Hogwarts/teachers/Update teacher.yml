@@ -6,6 +6,13 @@ info:
 http:
   method: PUT
   url: http://localhost:3000/teachers/1
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Severus Snape",
+        "house_id": 2
+      }
   auth: inherit
 
 settings:
@@ -13,4 +20,3 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
-​
