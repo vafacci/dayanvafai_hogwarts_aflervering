@@ -46,7 +46,5 @@ Der er tests i mappen Hogwarts.
 Start serveren, åbn Bruno, vælg en request og tryk Send.
 
 # Hvad jeg har haft svært ved
-Courses blev for svært til sidst.
-Derfor har jeg ikke lavet routes til courses, de ligger stadig i server.js.
-Jeg har heller ikke lavet controller og repository til alle courses endpoints, nogle har SQL direkte i server.js.
-Houses, teachers og students er lavet med routes, controller og repository.
+Courses var det sværeste, især de ekstra endpoints (teacher og students på et kursus).
+Nu er courses lavet på samme måde som de andre med routes, controller og repository.
