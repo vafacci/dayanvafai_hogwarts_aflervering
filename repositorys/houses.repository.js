@@ -1,5 +1,6 @@
 import { pool } from '../db.js';
 
+// R – get all houses
 export async function getAllHouses() {
 
     const result = await pool.query('SELECT * FROM houses');
@@ -8,6 +9,7 @@ export async function getAllHouses() {
 }
 
 
+// R – get one house by id
 export async function getHouseById(id) {
     const one = await pool.query ("SELECT * FROM houses WHERE id = $1", [id]);
 
@@ -18,7 +20,7 @@ export async function getHouseById(id) {
     }
 }
 
-// House på teachers er tekst (fx "Gryffindor"), ikke id
+// R – get house by name
 export async function getHouseByName(name) {
     const one = await pool.query("SELECT * FROM houses WHERE name = $1", [name]);
 

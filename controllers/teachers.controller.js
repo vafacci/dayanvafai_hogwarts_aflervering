@@ -1,6 +1,7 @@
 import * as teachersRepository from '../repositorys/teachers.repository.js';
 import * as housesRepository from '../repositorys/houses.repository.js';
 
+// R – get all teachers
 export async function getAllTeachers(req, res) {
   try {
     const teachers = await teachersRepository.getAllTeachers();
@@ -11,6 +12,7 @@ export async function getAllTeachers(req, res) {
   }
 }
 
+// R – get one teacher
 export async function getTeacherById(req, res) {
   try {
     const teacher = await teachersRepository.getTeacherById(req.params.id);
@@ -23,27 +25,28 @@ export async function getTeacherById(req, res) {
   }
 }
 
+// C – create teacher
 export async function postTeacher(req, res) {
   try {
     const { name, house_id } = req.body;
 
-    // 1) name skal være med
+    // name is required
     if (!name) {
       return res.status(400).send({ message: 'Name is required' });
     }
 
-    // 2) house_id skal være med
+    // house_id is required
     if (!house_id) {
       return res.status(400).send({ message: 'house_id is required' });
     }
 
-    // 3) huset skal findes i databasen
+    // house must exist
     const house = await housesRepository.getHouseById(house_id);
     if (!house) {
       return res.status(404).send({ message: 'House not found' });
     }
 
-    // 4) læreren må ikke findes i forvejen (samme navn)
+    // teacher must not already exist (same name)
     const existing = await teachersRepository.getTeacherByName(name);
     if (existing) {
       return res.status(409).send({ message: 'Teacher already exists' });
@@ -57,36 +60,35 @@ export async function postTeacher(req, res) {
   }
 }
 
+// U – update teacher
 export async function putTeacher(req, res) {
   try {
-    // Fra URL: /teachers/2  →  id = 2
-    // Fra body: { "name": "...", "house_id": 1 }
     const { id } = req.params;
     const { name, house_id } = req.body;
 
-    // 1) name skal være med
+    // name is required
     if (!name) {
       return res.status(400).send({ message: 'Name is required' });
     }
 
-    // 2) house_id skal være med
+    // house_id is required
     if (!house_id) {
       return res.status(400).send({ message: 'house_id is required' });
     }
 
-    // 3) huset skal findes
+    // house must exist
     const house = await housesRepository.getHouseById(house_id);
     if (!house) {
       return res.status(404).send({ message: 'House not found' });
     }
 
-    // 4) læreren skal findes (det ekstra ift. POST)
+    // teacher must exist
     const existing = await teachersRepository.getTeacherById(id);
     if (!existing) {
       return res.status(404).send({ message: 'Teacher not found' });
     }
 
-    // 5) opdater i databasen
+    // update in the database
     const teacher = await teachersRepository.putTeacher(name, house_id, id);
     return res.status(200).json(teacher);
   } catch (error) {
@@ -96,20 +98,21 @@ export async function putTeacher(req, res) {
 }
 
 
+// D – delete teacher
 export async function deleteTeacher(req, res) {
   try {
-    const { id } = req.params; // fra URL: /teachers/2
+    const { id } = req.params;
 
-    // 1) findes læreren?
+    // teacher must exist
     const existing = await teachersRepository.getTeacherById(id);
     if (!existing) {
       return res.status(404).send({ message: 'Teacher not found' });
     }
 
-    // 2) slet
+    // delete
     await teachersRepository.deleteTeacher(id);
 
-    // 3) svar
+    // send response
     return res.status(200).json({ deleted: true });
   } catch (error) {
     console.log(error);

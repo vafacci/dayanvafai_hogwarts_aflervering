@@ -1,36 +1,22 @@
 // Hogwarts Course Management – backend (REST API)
-// CRUD = Create, Read, Update, Delete
-// Start med: npm start   →  http://localhost:3000
+// Start with: npm start  →  http://localhost:3000
 
-
-import studentsRoutes from './Routes/students.routes.js';
-import teachersRoutes from './Routes/teachers.routes.js';
+import express from 'express'; // web server library
 import housesRoutes from './Routes/houses.routes.js';
+import teachersRoutes from './Routes/teachers.routes.js';
+import studentsRoutes from './Routes/students.routes.js';
 import coursesRoutes from './Routes/courses.routes.js';
-import express from 'express'; // web-server bibliotek
 
 const app = express();
-app.use(express.json()); // gør at vi kan læse JSON fra POST/PUT body
+app.use(express.json()); // lets us read JSON from the body of POST/PUT requests
 
+// Each router handles one resource (see the Routes folder)
+app.use("/houses", housesRoutes);     // read only
+app.use("/teachers", teachersRoutes); // full CRUD
+app.use("/students", studentsRoutes); // full CRUD
+app.use("/courses", coursesRoutes);   // full CRUD + teacher and students on a course
 
-// HOUSES 
-// GET /houses  →  hent ALLE huse + hent ÉT hus
-app.use('/houses', housesRoutes);
-
-// TEACHERS – fuld CRUD 
-// hent alle teachers + hent en teacher + opret ny teacher + opdater en teacher + slet en teacher
-app.use("/teachers", teachersRoutes);
-
-// STUDENTS – fuld CRUD  
-// hent alle students + hent en student + opret ny student + opdater en student + slet en student
-app.use("/students", studentsRoutes);
-
-// COURSES – fuld CRUD
-// hent alle + hent et (med teacher og students) + opret + opdater navn + slet
-// ekstra: sæt teacher (PUT /:id/teacher), tilføj elev (POST /:id/students), fjern elev (DELETE /:id/students/:studentId)
-app.use("/courses", coursesRoutes);
-
-// Start serveren på port 3000
+// Start the server on port 3000
 app.listen(3000, () => {
   console.log("Server kører på http://localhost:3000");
 });

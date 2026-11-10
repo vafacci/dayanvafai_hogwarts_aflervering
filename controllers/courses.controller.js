@@ -2,6 +2,7 @@ import * as coursesRepository from '../repositorys/courses.repository.js';
 import * as teachersRepository from '../repositorys/teachers.repository.js';
 import * as studentsRepository from '../repositorys/students.repository.js';
 
+// R – get all courses
 export async function getAllCourses(req, res) {
   try {
     const courses = await coursesRepository.getAllCourses();
@@ -12,6 +13,7 @@ export async function getAllCourses(req, res) {
   }
 }
 
+// R – get one course (with teacher and students)
 export async function getCourseById(req, res) {
   try {
     const course = await coursesRepository.getCourseById(req.params.id);
@@ -24,27 +26,28 @@ export async function getCourseById(req, res) {
   }
 }
 
+// C – create course
 export async function postCourse(req, res) {
   try {
     const { name, teacher_id } = req.body;
 
-    // 1) name skal være med
+    // name is required
     if (!name) {
       return res.status(400).send({ message: 'Name is required' });
     }
 
-    // 2) teacher_id skal være med
+    // teacher_id is required
     if (!teacher_id) {
       return res.status(400).send({ message: 'teacher_id is required' });
     }
 
-    // 3) læreren skal findes i databasen
+    // teacher must exist
     const teacher = await teachersRepository.getTeacherById(teacher_id);
     if (!teacher) {
       return res.status(404).send({ message: 'Teacher not found' });
     }
 
-    // 4) kurset må ikke findes i forvejen (samme navn)
+    // course must not already exist (same name)
     const existing = await coursesRepository.getCourseByName(name);
     if (existing) {
       return res.status(409).send({ message: 'Course already exists' });
@@ -58,6 +61,7 @@ export async function postCourse(req, res) {
   }
 }
 
+// U – update course name
 export async function putCourse(req, res) {
   try {
     const { id } = req.params;
@@ -80,25 +84,24 @@ export async function putCourse(req, res) {
   }
 }
 
+// U – set / change teacher
 export async function putCourseTeacher(req, res) {
   try {
-    // Fra URL: /courses/1/teacher  →  id = 1
-    // Fra body: { "teacher_id": 2 }
     const { id } = req.params;
     const { teacher_id } = req.body;
 
-    // 1) teacher_id skal være med
+    // teacher_id is required
     if (!teacher_id) {
       return res.status(400).send({ message: 'teacher_id is required' });
     }
 
-    // 2) kurset skal findes
+    // course must exist
     const existing = await coursesRepository.getCourseById(id);
     if (!existing) {
       return res.status(404).send({ message: 'Course not found' });
     }
 
-    // 3) læreren skal findes
+    // teacher must exist
     const teacher = await teachersRepository.getTeacherById(teacher_id);
     if (!teacher) {
       return res.status(404).send({ message: 'Teacher not found' });
@@ -112,31 +115,30 @@ export async function putCourseTeacher(req, res) {
   }
 }
 
+// U – add student to course
 export async function postCourseStudent(req, res) {
   try {
-    // Fra URL: /courses/1/students  →  id = 1
-    // Fra body: { "student_id": 4 }
     const { id } = req.params;
     const { student_id } = req.body;
 
-    // 1) student_id skal være med
+    // student_id is required
     if (!student_id) {
       return res.status(400).send({ message: 'student_id is required' });
     }
 
-    // 2) kurset skal findes
+    // course must exist
     const course = await coursesRepository.getCourseById(id);
     if (!course) {
       return res.status(404).send({ message: 'Course not found' });
     }
 
-    // 3) eleven skal findes
+    // student must exist
     const student = await studentsRepository.getStudentById(student_id);
     if (!student) {
       return res.status(404).send({ message: 'Student not found' });
     }
 
-    // 4) eleven må ikke være på kurset i forvejen
+    // student must not already be on the course
     const existing = await coursesRepository.getCourseStudent(id, student_id);
     if (existing) {
       return res.status(409).send({ message: 'Student already on course' });
@@ -150,21 +152,21 @@ export async function postCourseStudent(req, res) {
   }
 }
 
+// U – remove student from course
 export async function deleteCourseStudent(req, res) {
   try {
-    // Fra URL: /courses/1/students/2  →  id = 1, studentId = 2
     const { id, studentId } = req.params;
 
-    // 1) er eleven på kurset?
+    // student must be on the course
     const existing = await coursesRepository.getCourseStudent(id, studentId);
     if (!existing) {
       return res.status(404).send({ message: 'Student not on course' });
     }
 
-    // 2) fjern
+    // remove student from course
     await coursesRepository.deleteCourseStudent(id, studentId);
 
-    // 3) svar
+    // send response
     return res.status(200).json({ removed: true });
   } catch (error) {
     console.log(error);
@@ -172,20 +174,21 @@ export async function deleteCourseStudent(req, res) {
   }
 }
 
+// D – delete course
 export async function deleteCourse(req, res) {
   try {
     const { id } = req.params;
 
-    // 1) findes kurset?
+    // course must exist
     const existing = await coursesRepository.getCourseById(id);
     if (!existing) {
       return res.status(404).send({ message: 'Course not found' });
     }
 
-    // 2) slet
+    // delete
     await coursesRepository.deleteCourse(id);
 
-    // 3) svar
+    // send response
     return res.status(200).json({ deleted: true });
   } catch (error) {
     console.log(error);

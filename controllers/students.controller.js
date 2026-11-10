@@ -1,7 +1,7 @@
 import * as studentsRepository from '../repositorys/students.repository.js';
 import * as housesRepository from '../repositorys/houses.repository.js';
 
-// R – GET /students
+// R – get all students
 export async function getAllStudents(req, res) {
   try {
     const students = await studentsRepository.getAllStudents();
@@ -12,7 +12,7 @@ export async function getAllStudents(req, res) {
   }
 }
 
-// R – GET /students/:id
+// R – get one student
 export async function getStudentById(req, res) {
   try {
     const student = await studentsRepository.getStudentById(req.params.id);
@@ -25,39 +25,39 @@ export async function getStudentById(req, res) {
   }
 }
 
-// C – POST /students
+// C – create student
 export async function postStudent(req, res) {
   try {
     const { name, year, house_id } = req.body;
 
-    // 1) name skal være med
+    // name is required
     if (!name) {
       return res.status(400).send({ message: 'Name is required' });
     }
 
-    // 2) year skal være med
+    // year is required
     if (!year) {
       return res.status(400).send({ message: 'year is required' });
     }
 
-    // 3) house_id skal være med
+    // house_id is required
     if (!house_id) {
       return res.status(400).send({ message: 'house_id is required' });
     }
 
-    // 4) huset skal findes
+    // house must exist
     const house = await housesRepository.getHouseById(house_id);
     if (!house) {
       return res.status(404).send({ message: 'House not found' });
     }
 
-    // 5) eleven må ikke findes i forvejen
+    // student must not already exist (same name)
     const existing = await studentsRepository.getStudentByName(name);
     if (existing) {
       return res.status(409).send({ message: 'Student already exists' });
     }
 
-    // 6) opret elev
+    // create student
     const student = await studentsRepository.postStudent(name, year, house_id);
     return res.status(201).json(student);
   } catch (error) {
@@ -66,40 +66,40 @@ export async function postStudent(req, res) {
   }
 }
 
-// U – PUT /students/:id
+// U – update student
 export async function putStudent(req, res) {
   try {
     const { id } = req.params;
     const { name, year, house_id } = req.body;
 
-    // 1) name skal være med
+    // name is required
     if (!name) {
       return res.status(400).send({ message: 'Name is required' });
     }
 
-    // 2) year skal være med
+    // year is required
     if (!year) {
       return res.status(400).send({ message: 'year is required' });
     }
 
-    // 3) house_id skal være med
+    // house_id is required
     if (!house_id) {
       return res.status(400).send({ message: 'house_id is required' });
     }
 
-    // 4) huset skal findes
+    // house must exist
     const house = await housesRepository.getHouseById(house_id);
     if (!house) {
       return res.status(404).send({ message: 'House not found' });
     }
 
-    // 5) eleven skal findes
+    // student must exist
     const existing = await studentsRepository.getStudentById(id);
     if (!existing) {
       return res.status(404).send({ message: 'Student not found' });
     }
 
-    // 6) opdater elev
+    // update student
     const student = await studentsRepository.putStudent(name, year, house_id, id);
     return res.status(200).json(student);
   } catch (error) {
@@ -108,18 +108,18 @@ export async function putStudent(req, res) {
   }
 }
 
-// D – DELETE /students/:id
+// D – delete student
 export async function deleteStudent(req, res) {
   try {
     const { id } = req.params;
 
-    // 1) eleven skal findes
+    // student must exist
     const existing = await studentsRepository.getStudentById(id);
     if (!existing) {
       return res.status(404).send({ message: 'Student not found' });
     }
 
-    // 2) slet elev
+    // delete student
     await studentsRepository.deleteStudent(id);
     return res.status(200).json({ deleted: true });
   } catch (error) {

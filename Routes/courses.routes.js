@@ -1,15 +1,36 @@
+// COURSES router – full CRUD + extra endpoints for teacher and students
+// server.js sends everything on /courses here, so we only write the rest of the path.
 import { Router } from "express";
 import * as coursesController from '../controllers/courses.controller.js'
 
 const router = Router();
 
-router.get('/', coursesController.getAllCourses);                                // GET    /courses
-router.get('/:id', coursesController.getCourseById);                             // GET    /courses/1
-router.post('/', coursesController.postCourse);                                  // POST   /courses
-router.put('/:id', coursesController.putCourse);                                 // PUT    /courses/1
-router.put('/:id/teacher', coursesController.putCourseTeacher);                  // PUT    /courses/1/teacher
-router.post('/:id/students', coursesController.postCourseStudent);               // POST   /courses/1/students
-router.delete('/:id/students/:studentId', coursesController.deleteCourseStudent); // DELETE /courses/1/students/2
-router.delete('/:id', coursesController.deleteCourse);                           // DELETE /courses/1
+// ---------- Standard CRUD ----------
+
+// R – get all courses
+router.get('/', coursesController.getAllCourses);
+
+// R – get one course WITH teacher and students
+router.get('/:id', coursesController.getCourseById);
+
+// C – create course
+router.post('/', coursesController.postCourse);
+
+// U – update the name only
+router.put('/:id', coursesController.putCourse);
+
+// D – delete course (students on the course are deleted automatically by the database)
+router.delete('/:id', coursesController.deleteCourse);
+
+// ---------- Extra: teacher and students on a course ----------
+
+// U – set / change teacher
+router.put('/:id/teacher', coursesController.putCourseTeacher);
+
+// U – add student to course
+router.post('/:id/students', coursesController.postCourseStudent);
+
+// U – remove student from course (:studentId is the student being removed)
+router.delete('/:id/students/:studentId', coursesController.deleteCourseStudent);
 
 export default router;

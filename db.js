@@ -1,4 +1,4 @@
-// Kun database-forbindelsen (Pool)
+// Database connection (Pool), settings come from .env
 import 'dotenv/config';
 import { Pool } from 'pg';
 

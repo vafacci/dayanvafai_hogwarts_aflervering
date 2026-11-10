@@ -1,6 +1,7 @@
 import * as housesRepository from '../repositorys/houses.repository.js';
 
 
+// R – get all houses
 export async function getAllHouses (req, res) {
 
     try {
@@ -14,6 +15,7 @@ export async function getAllHouses (req, res) {
 }
 
 
+// R – get one house
 export async function getHouseById (req, res) {
 
     try {

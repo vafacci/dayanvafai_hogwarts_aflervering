@@ -1,12 +1,12 @@
 import { pool } from '../db.js';
 
-// R – alle kurser
+// R – get all courses
 export async function getAllCourses() {
   const result = await pool.query('SELECT * FROM courses');
   return result.rows;
 }
 
-// R – ét kursus MED teacher og students
+// R – get one course WITH teacher and students
 export async function getCourseById(id) {
   const one = await pool.query('SELECT * FROM courses WHERE id = $1', [id]);
   if (one.rowCount === 0) return null;
@@ -23,14 +23,14 @@ export async function getCourseById(id) {
   return { ...course, teacher: teacher.rows[0], students: students.rows };
 }
 
-// R – find kursus via navn (bruges til duplikat-tjek)
+// R – get course by name (used to check for duplicates)
 export async function getCourseByName(name) {
   const one = await pool.query('SELECT * FROM courses WHERE name = $1', [name]);
   if (one.rowCount === 0) return null;
   return one.rows[0];
 }
 
-// R – er eleven allerede på kurset? (bruges til duplikat-tjek)
+// R – get a student's link to a course (used to check for duplicates)
 export async function getCourseStudent(course_id, student_id) {
   const one = await pool.query(
     'SELECT * FROM course_students WHERE course_id = $1 AND student_id = $2',
@@ -40,7 +40,7 @@ export async function getCourseStudent(course_id, student_id) {
   return one.rows[0];
 }
 
-// C – opret kursus
+// C – create course
 export async function postCourse(name, teacher_id) {
   const result = await pool.query(
     'INSERT INTO courses (name, teacher_id) VALUES ($1, $2) RETURNING *',
@@ -49,7 +49,7 @@ export async function postCourse(name, teacher_id) {
   return result.rows[0];
 }
 
-// U – opdater kun kursus-navn
+// U – update course name
 export async function putCourse(name, id) {
   const result = await pool.query(
     'UPDATE courses SET name = $1 WHERE id = $2 RETURNING *',
@@ -58,7 +58,7 @@ export async function putCourse(name, id) {
   return result.rows[0];
 }
 
-// U – sæt / skift teacher på et kursus
+// U – set / change teacher on a course
 export async function putCourseTeacher(teacher_id, id) {
   const result = await pool.query(
     'UPDATE courses SET teacher_id = $1 WHERE id = $2 RETURNING *',
@@ -67,7 +67,7 @@ export async function putCourseTeacher(teacher_id, id) {
   return result.rows[0];
 }
 
-// U – tilføj elev til kursus
+// U – add student to course
 export async function postCourseStudent(course_id, student_id) {
   const result = await pool.query(
     'INSERT INTO course_students (course_id, student_id) VALUES ($1, $2) RETURNING *',
@@ -76,7 +76,7 @@ export async function postCourseStudent(course_id, student_id) {
   return result.rows[0];
 }
 
-// U – fjern elev fra kursus
+// U – remove student from course
 export async function deleteCourseStudent(course_id, student_id) {
   await pool.query(
     'DELETE FROM course_students WHERE course_id = $1 AND student_id = $2',
@@ -85,7 +85,7 @@ export async function deleteCourseStudent(course_id, student_id) {
   return true;
 }
 
-// D – slet kursus (course_students slettes automatisk pga. ON DELETE CASCADE i databasen)
+// D – delete course (the database also deletes its course_students rows)
 export async function deleteCourse(id) {
   await pool.query('DELETE FROM courses WHERE id = $1', [id]);
   return true;
